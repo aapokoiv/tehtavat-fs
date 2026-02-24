@@ -11,4 +11,4 @@ const getOne = ( country ) => {
   return request.then(response => response.data)
 }
 
-export default { getAll, getOne } 
+export default { getAll, getOne }

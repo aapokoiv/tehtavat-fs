@@ -1,8 +1,18 @@
 import countryService from '../services/countries.js'
-import { useEffect } from 'react'
+import { useState } from 'react'
 import FullInfo from './FullInfo.jsx'
 
 const Countries = ({ countries }) => {
+  const [expanded, setExpanded] = useState([])
+
+  const toggleExpanded = ( country ) => {
+    if (expanded.includes(country)) {
+      setExpanded(expanded.filter(c => c !== country))
+    } else {
+      setExpanded([...expanded, country])
+    }
+  }
+
   if (countries.length > 10) {
     return (
       <div>
@@ -11,13 +21,13 @@ const Countries = ({ countries }) => {
     )
   } else if (countries.length === 1) {
     return (
-      <FullInfo country={countries[0]} />
+      <FullInfo country={countries[0]} toggle={null} />
     )
   } else if (countries.length !== 0) {
     return (
       <ul>
         {countries.map(c => 
-          <Country key={c} country={c} />
+          <Country key={c} country={c} isExpanded={expanded.includes(c)} toggle={toggleExpanded}/>
         )}
       </ul>
     )
@@ -26,6 +36,12 @@ const Countries = ({ countries }) => {
   }
 }
 
-const Country = ({ country }) => <li>{country}</li>
+const Country = ({ country, toggle, isExpanded }) => {
+  if (isExpanded) {
+    return <FullInfo country={country} toggle={toggle} />
+  } else {
+    return <li>{country} <button onClick={() => toggle(country)}>Show</button> </li>
+  }
+}
 
 export default Countries
