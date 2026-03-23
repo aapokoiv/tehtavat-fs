@@ -1,0 +1,33 @@
+### valid post
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "Aapo Koivula",
+  "number": "01234567"
+}
+
+### no name
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "number": "01234567"
+}
+
+### no number 
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "Aapo Koivula"
+}
+
+### duplicate name
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "Arto Hellas",
+  "number": "01234567"
+}

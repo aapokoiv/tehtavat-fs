@@ -1,0 +1,20 @@
+{
+  "name": "phonebook",
+  "version": "0.0.1",
+  "description": "",
+  "license": "ISC",
+  "author": "Aapo Koivula",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:ui": "rm -rf dist && cd ../../osa2/phonebook/ && npm run build && cp -r dist ../../osa3/phonebookBackend/",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "morgan": "^1.10.1"
+  }
+}
