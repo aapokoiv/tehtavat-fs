@@ -1,0 +1,8 @@
+### get all
+GET http://localhost:3001/api/persons
+
+### get arto
+GET http://localhost:3001/api/persons/69c78e5b7e18953f203e6502
+
+### get info
+GET http://localhost:3001/info
