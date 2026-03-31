@@ -29,19 +29,27 @@ const App = () => {
     if (person === undefined) {
       personService
         .add(bookObject)
-        .then(newPerson => setPersons(persons.concat(newPerson)))
-      setMessage({text: `Added ${bookObject.name}`, isGood: true})
+        .then(newPerson => {
+          setPersons(persons.concat(newPerson))
+          setMessage({ text: `Added ${bookObject.name}`, isGood: true })
+          setTimeout(() => setMessage({ text: null, isGood: true }), 5000)
+    })
+    .catch(error => {
+      setMessage({ text: error.response.data.error, isGood: false })
       setTimeout(() => setMessage({text: null, isGood: true}), 5000)
+      })
     } else if (window.confirm(`${person.name} is already in the phonebook, update the number?`)) {
       personService
         .update(person.id, bookObject)
-        .then(updatedPerson => setPersons(persons.map(p => p.id === person.id ? updatedPerson : p)))
-        .catch(error => {
-          setMessage({text: `${bookObject.name} has been removed from the server`, isGood: false})
-          setTimeout(() => setMessage({text: null, isGood: true}), 5000)
-        })
-      setMessage({text: `Updated number for ${bookObject.name}`, isGood: true})
+        .then(updatedPerson => {
+        setPersons(persons.map(p => p.id === person.id ? updatedPerson : p))
+          setMessage({ text: `Updated number for ${bookObject.name}`, isGood: true })
+          setTimeout(() => setMessage({ text: null, isGood: true }), 5000)
+    })
+    .catch(error => {
+      setMessage({ text: error.response.data.error, isGood: false })
       setTimeout(() => setMessage({text: null, isGood: true}), 5000)
+      })
     }
     setNewName('')
     setNewNum('')
