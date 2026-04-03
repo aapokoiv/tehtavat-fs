@@ -7,11 +7,9 @@ const app = express()
 app.use(express.json())
 app.use(express.static('dist'))
 
-morgan.token('data', function (req, res) { return JSON.stringify(req.body) })
+morgan.token('data', function (req) { return JSON.stringify(req.body) })
 
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'));
-
-let persons = []
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
 
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(persons => {
@@ -26,14 +24,12 @@ app.get('/api/persons/:id', (request, response, next) => {
     }
     response.json(person)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
-  Person.findByIdAndDelete(request.params.id).then(res =>{
-    response.status(204).end()
-  })
-  .catch(error => next(error))
+  Person.findByIdAndDelete(request.params.id).then(response.status(204).end())
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -49,7 +45,7 @@ app.put('/api/persons/:id', (request, response, next) => {
       response.json(updatedPerson)
     })
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 app.post('/api/persons', (request, response, next) => {
@@ -61,13 +57,11 @@ app.post('/api/persons', (request, response, next) => {
     number: number,
   })
 
-  person.save().then(savedPerson =>{
+  person.save().then(savedPerson => {
     response.json(savedPerson)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
-
-const generateId = () => Math.ceil(Math.random() * 1000000)
 
 app.get('/info', (request, response) => {
   const date = new Date()
@@ -81,10 +75,10 @@ app.get('/info', (request, response) => {
     second: 'numeric',
     timeZoneName: 'short',
     hour12: false,
-  }).format(date).replace(/,/g,"")
+  }).format(date).replace(/,/g,'')
   const longTimezone = new Intl.DateTimeFormat('en-US', {
-    timeZoneName: "long"
-  }).formatToParts(date).find(p => p.type === "timeZoneName").value
+    timeZoneName: 'long'
+  }).formatToParts(date).find(p => p.type === 'timeZoneName').value
   console.log('formattedDate, longTimezone:', formattedDate, longTimezone)
   Person.find({}).then(persons => {
     response.send(`<div><p>Phonebook has info for ${persons.length} people</p><p>${formattedDate} ${longTimezone}</p><div>`)
