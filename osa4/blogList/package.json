@@ -1,0 +1,19 @@
+{
+  "name": "bloglist",
+  "version": "0.1.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Aapo Koivula",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "httpyac": "^6.16.7",
+    "mongoose": "^9.4.1"
+  }
+}
