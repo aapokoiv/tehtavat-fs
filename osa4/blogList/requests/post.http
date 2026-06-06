@@ -1,10 +1,27 @@
+# @import ./login.http
+
 ### valid post
+# @forceRef login
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer {{login.token}}
 
 {
   "title": "First",
   "author": "Me",
   "url": "www.me.first",
   "likes": 420
+}
+
+### 2nd valid post for same user
+# @forceRef login
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer {{login.token}}
+
+{
+  "title": "Second",
+  "author": "Me",
+  "url": "www.me.sec",
+  "likes": 13
 }

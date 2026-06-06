@@ -1,0 +1,9 @@
+### add aapeli
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+  "username": "aapeli",
+  "name": "Aapo Koivula",
+  "password": "fakepassword1"
+}

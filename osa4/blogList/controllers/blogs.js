@@ -1,29 +1,47 @@
+const jwt = require('jsonwebtoken')
 const blogRouter = require('express').Router()
+const { userExtractor } = require('../utils/middleware')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
-blogRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({})
-  response.json(blogs)
+blogRouter.get('/', async (req, res) => {
+  const blogs = await Blog.find({}).populate('user', {
+    username: 1,
+    name: 1,
+    id: 1
+  })
+  res.json(blogs)
 })
 
-blogRouter.post('/', async (request, response) => {
-  const body = request.body
-  if (body.title && body.url) {
-    const blog = new Blog({
-      title: body.title,
-      author: body.author,
-      url: body.url,
-      likes: body.likes || 0,
-    })
-
-    const res = await blog.save()
-    response.status(201).json(res)
-  } else {
-    response.status(400).end()
+blogRouter.post('/', userExtractor, async (req, res) => {
+  const user = req.user
+  const body = req.body
+  if (!user) {
+    return res.status(400).json({ error: 'UserId missing or not valid' })
   }
+  if (!(body.title && body.url)) {
+    return res.status(400).json({ error: 'title and url are required' })
+  }
+
+  const blog = new Blog({
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes || 0,
+    user: user._id
+  })
+
+  const savedBlog = await blog.save()
+  user.blogs = user.blogs.concat(savedBlog._id)
+  await user.save()
+  res.status(201).json(savedBlog)
 })
 
-blogRouter.delete('/:id', async (req, res) => {
+blogRouter.delete('/:id', userExtractor, async (req, res) => {
+  const blog = await Blog.findById(req.params.id)
+  if (!(blog.user.toString() === req.user._id.toString())) {
+    return res.status(401).json({ error: 'blog owner and user do not match' })
+  }
   await Blog.findByIdAndDelete(req.params.id)
   res.status(204).end()
 })
@@ -50,6 +68,5 @@ blogRouter.put('/:id', async (req, res) => {
 
   res.status(200).json(updatedBlog)
 })
-
 
 module.exports = blogRouter
