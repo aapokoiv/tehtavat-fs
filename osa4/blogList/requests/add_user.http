@@ -7,3 +7,13 @@ Content-Type: application/json
   "name": "Aapo Koivula",
   "password": "fakepassword1"
 }
+
+### add onni
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+  "username": "onni",
+  "name": "Onni Ohjelmoija",
+  "password": "fakepassword1"
+}

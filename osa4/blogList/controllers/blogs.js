@@ -10,6 +10,7 @@ blogRouter.get('/', async (req, res) => {
     name: 1,
     id: 1
   })
+
   res.json(blogs)
 })
 
@@ -46,17 +47,22 @@ blogRouter.delete('/:id', userExtractor, async (req, res) => {
   res.status(204).end()
 })
 
-blogRouter.put('/:id', async (req, res) => {
+blogRouter.put('/:id', userExtractor, async (req, res) => {
   const { title, author, url, likes } = req.body
 
   const blog = await Blog.findById(req.params.id)
-
   if (!blog) {
     return res.status(404).end()
   }
-
   if (!title || !url) {
     return res.status(400).end()
+  }
+  if ((title !== blog.title)
+    || (author !== blog.author)
+    || (url !== blog.url)) {
+    if (!(blog.user.toString() === req.user._id.toString())) {
+      return res.status(401).json({ error: 'Cannot change content of other users blog' })
+    }
   }
 
   blog.title = title

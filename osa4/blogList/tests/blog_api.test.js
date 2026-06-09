@@ -156,7 +156,7 @@ describe('When there is one user with two blogs in DB', async () => {
     const token = loginResponse.body.token
 
     const startBlogs = await helper.blogsInDB()
-    
+
     await api.delete(`/api/blogs/${startBlogs[0].id}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(204)
@@ -173,9 +173,44 @@ describe('When there is one user with two blogs in DB', async () => {
     await api.delete(`/api/notes/notexistingid`).expect(404)
   })
 
-  test('valid update works', async () => {
+  test('any user can like', async () => {
+    const passwordHash = await bcrypt.hash('supersekret', 10)
+    const user = new User({ username: 'sally', passwordHash })
+    const anotherUser = await user.save()
+
+    const loginResponse = await api
+      .post('/api/login')
+      .send({username: 'sally', password: 'supersekret'})
+    const token = loginResponse.body.token
+
     const startBlogs = await helper.blogsInDB()
-    
+
+    const newInfo = {
+        "title": `${startBlogs[0].title}`,
+        "author": `${startBlogs[0].author}`,
+        "url": `${startBlogs[0].url}`,
+        "likes": startBlogs[0].likes + 1
+      }
+
+    await api
+      .put(`/api/blogs/${startBlogs[0].id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(newInfo)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const endBlogs = await helper.blogsInDB()
+    assert.strictEqual(endBlogs[0].likes, newInfo.likes)
+  })
+
+  test('full update requires auth and works', async () => {
+    const loginResponse = await api
+      .post('/api/login')
+      .send({username: 'root', password: 'sekret'})
+    const token = loginResponse.body.token
+
+    const startBlogs = await helper.blogsInDB()
+
     const newInfo = {
         "title": "First",
         "author": "Me",
@@ -185,15 +220,21 @@ describe('When there is one user with two blogs in DB', async () => {
 
     await api
       .put(`/api/blogs/${startBlogs[0].id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(newInfo)
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
     const endBlogs = await helper.blogsInDB()
-    assert(endBlogs[0].likes, newInfo.likes)
+    assert.strictEqual(endBlogs[0].likes, newInfo.likes)
   })
 
   test('invalid update id returns 404', async () => {
+    const loginResponse = await api
+      .post('/api/login')
+      .send({username: 'root', password: 'sekret'})
+    const token = loginResponse.body.token
+
     const newInfo = {
         "title": "First",
         "author": "Me",
@@ -203,11 +244,17 @@ describe('When there is one user with two blogs in DB', async () => {
 
     await api
       .put(`/api/blogs/665f1f2c0c7a2a1234567890`)
+      .set('Authorization', `Bearer ${token}`)
       .send(newInfo)
       .expect(404)
   })
 
   test('invalid parameters returns 400', async () => {
+    const loginResponse = await api
+      .post('/api/login')
+      .send({username: 'root', password: 'sekret'})
+    const token = loginResponse.body.token
+
     const startBlogs = await helper.blogsInDB()
     const newInfo = {
         "title": "First",
@@ -217,6 +264,7 @@ describe('When there is one user with two blogs in DB', async () => {
 
     await api
       .put(`/api/blogs/${startBlogs[0].id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(newInfo)
       .expect(400)
   })
