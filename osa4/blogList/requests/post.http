@@ -9,7 +9,7 @@ Authorization: Bearer {{login.token}}
 {
   "title": "First",
   "author": "Me",
-  "url": "www.me.first",
+  "url": "https://chatgpt.com/",
   "likes": 420
 }
 
@@ -22,6 +22,6 @@ Authorization: Bearer {{login.token}}
 {
   "title": "Second",
   "author": "Me",
-  "url": "www.me.sec",
+  "url": "https://fullstackopen.com/en/",
   "likes": 13
 }

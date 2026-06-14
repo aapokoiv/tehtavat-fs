@@ -1,8 +1,52 @@
 import { useState } from 'react'
-import './Blog.css'
+import styled from 'styled-components'
+import { colors, Button } from './sharedStyles.js'
+
+const BlogGroup = styled.div`
+  background: ${colors.aliceBlue};
+  border: 2px solid ${colors.charcoalBrown};
+  border-radius: 1rem;
+  color: ${colors.charcoalBrown};
+  margin: 2rem 0;
+  max-width: 32rem;
+  padding: 1.5rem;
+`
+
+const BlogLine = styled.div`
+  margin: 1rem 0;
+`
+
+const LikeButton = styled.button`
+  background: #fff;
+  color: ${colors.skyAqua};
+  border: 2px solid ${colors.skyAqua};
+  border-radius: 9px;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+
+  &:hover {
+    background: #eee;
+  }
+`
+
+const DeleteButton = styled.button`
+  background: #fff;
+  color: ${colors.softBlossom};
+  border: 2px solid ${colors.softBlossom};
+  border-radius: 9px;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+
+  &:hover {
+    background: #eee;
+  }
+`
 
 const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
-  const [showAll, setShowAll] = useState(false)
+  if (!blog) {
+    return null
+  }
+  console.log(blog)
 
   const likeBlog = () => {
     const newBlog = {
@@ -20,39 +64,28 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
     }
   }
 
-  const allInfo = () => (
-    <>
-      <div>
-        {blog.url}
-      </div>
-      <div>
-        likes {blog.likes}
-        <button onClick={() => likeBlog()}>like</button>
-      </div>
-      <div>
-        {blog.user.name}
-      </div>
-      {ownedByUser() && <button onClick={removeBlog}>delete</button>}
-    </>
-  )
-
-  const toggleShowAll = () => {
-    setShowAll(!showAll)
-  }
-
-  const ownedByUser = () => user.id === blog.user.id
+  const ownedByUser = () => user && user.id === blog.user.id
 
   return (
-    <div className={'blog'}>
+    <BlogGroup>
       <div>
-        {blog.title}, -{blog.author}
-        <button
-          onClick={toggleShowAll}>
-          {showAll ? 'hide' : 'show'}
-        </button>
+        <h2><strong>{blog.title}</strong></h2>
       </div>
-      {showAll && allInfo()}
-    </div>
+      <BlogLine>
+        By {blog.author}
+      </BlogLine>
+      <BlogLine>
+        <a href={blog.url} >{blog.url}</a>
+      </BlogLine>
+      <BlogLine>
+        Added by: {blog.user.name}
+      </BlogLine>
+      <BlogLine>
+        {blog.likes} Likes
+        {user && <LikeButton onClick={() => likeBlog()} style={{ marginLeft: '0.5rem' }}>like</LikeButton>}
+        {ownedByUser() && <DeleteButton onClick={removeBlog} style={{ marginLeft: '0.5rem' }}>delete</DeleteButton>}
+      </BlogLine>
+    </BlogGroup>
   )
 }
 

@@ -1,4 +1,28 @@
 import { useState } from 'react'
+import styled from 'styled-components'
+import { Button, colors, Input } from './sharedStyles.js'
+
+const PageSection = styled.div`
+  background: ${colors.aliceBlue};
+  border: 2px solid ${colors.charcoalBrown};
+  border-radius: 1rem;
+  color: ${colors.charcoalBrown};
+  margin: 2rem 0;
+  max-width: 32rem;
+  padding: 1.5rem;
+`
+
+const Form = styled.form`
+  display: grid;
+  gap: 1rem;
+`
+
+const FormGroup = styled.div`
+  label {
+    display: grid;
+    font-weight: 700;
+  }
+`
 
 const NewBlogForm = ({ createBlog }) => {
   const [title, setTitle] = useState('')
@@ -20,42 +44,42 @@ const NewBlogForm = ({ createBlog }) => {
   }
 
   return (
-    <div>
+    <PageSection>
       <h2>create new</h2>
-      <form onSubmit={addBlog}>
-        <div>
+      <Form onSubmit={addBlog}>
+        <FormGroup>
           <label>
             title:
-            <input
+            <Input
               type="text"
               value={title}
               onChange={({ target }) => setTitle(target.value)}
             />
           </label>
-        </div>
-        <div>
+        </FormGroup>
+        <FormGroup>
           <label>
             author:
-            <input
+            <Input
               type="text"
               value={author}
               onChange={({ target }) => setAuthor(target.value)}
             />
           </label>
-        </div>
-        <div>
+        </FormGroup>
+        <FormGroup>
           <label>
             url:
-            <input
+            <Input
               type="text"
               value={url}
               onChange={({ target }) => setUrl(target.value)}
             />
           </label>
-        </div>
-        <button type="submit">create</button>
-      </form>
-    </div>
+        </FormGroup>
+        <Button type="submit">create</Button>
+      </Form>
+    </PageSection>
   )
 }
 

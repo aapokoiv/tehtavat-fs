@@ -15,56 +15,49 @@ describe('Blog app', () => {
     await page.goto('/')
   })
 
-  test('Login form is shown', async ({ page }) => {
-    await expect(page.getByText('Log in')).toBeVisible()
-    await expect(page.getByLabel('username')).toBeVisible()
-    await expect(page.getByLabel('password')).toBeVisible()
-    await expect(page.getByRole('button', { name: 'login' })).toBeVisible()
-  })
 
   describe('Login', () => {
-    test('succeeds with correct credentials', async ({ page }) => {
+    test('Login succeeds with the correct username/password ', async ({ page }) => {
+      await expect(page.getByRole('link', { name: 'login' })).toBeVisible()
       await loginWith(page, 'aapokoiv', 'salainen')
-      await expect(page.getByText('Aapo Koivula logged in')).toBeVisible()
+      await expect(page.getByText('Logged in successfully')).toBeVisible()
     })
 
     test('fails with wrong credentials', async ({ page }) => {
       await loginWith(page, 'aapokoiv', 'noooo')
 
       await expect(page.getByText('wrong username or password')).toBeVisible()
-      await expect(page.getByText('Aapo Koivula logged in')).not.toBeVisible()
+      await expect(page.getByText('Logged in successfully')).not.toBeVisible()
     })
     describe('When logged in', () => {
       beforeEach(async ({ page }) => {
         await loginWith(page, 'aapokoiv', 'salainen')
       })
 
-      test('a new blog can be created', async ({ page }) => {
-        await page.getByRole('button', { name: 'create new blog' }).click()
-        const textboxes = await page.getByRole('textbox').all()
-        await textboxes[0].fill('E2E testing')
-        await textboxes[1].fill('aapo')
-        await textboxes[2].fill('localhost')
+      test('A logged-in user can create a blog', async ({ page }) => {
+        await page.getByRole('link', { name: 'new blog' }).click()
+        await page.getByLabel('title:').fill('E2E testing')
+        await page.getByLabel('author:').fill('aapo')
+        await page.getByLabel('url:').fill('localhost')
         await page.getByRole('button', { name: 'create' }).click()
 
         await expect(page.getByText('E2E testing, -aapo')).toBeVisible()
-        await expect(page.getByRole('button', { name: 'show' })).toBeVisible()
       })
 
-      describe('When there is a blog', () => {
+      describe('A logged-in user can like blogs', () => {
         beforeEach(async ({ page }) => {
           await createBlog(page, 'E2E testing', 'aapo', 'localhost')
         })
 
         test('a blog can be liked', async ({ page }) => {
-          await page.getByRole('button', { name: 'show' }).click()
-          await expect(page.getByText('likes 0')).toBeVisible()
+          await page.getByRole('link', { name: 'E2E testing, -aapo' }).click()
+          await expect(page.getByText('0 Likes')).toBeVisible()
           await page.getByRole('button', { name: 'like' }).click()
-          await expect(page.getByText('likes 1')).toBeVisible()
+          await expect(page.getByText('1 Likes')).toBeVisible()
         })
 
         test('the creator can delete the blog', async ({ page }) => {
-          await page.getByRole('button', { name: 'show' }).click()
+          await page.getByRole('link', { name: 'E2E testing, -aapo' }).click()
           page.on('dialog', dialog => dialog.accept())
           await page.getByRole('button', { name: 'delete' }).click()
         })
@@ -80,7 +73,7 @@ describe('Blog app', () => {
           await page.getByRole('button', { name: 'logout' }).click()
           await loginWith(page, 'onni', 'salainen')
 
-          await page.getByRole('button', { name: 'show' }).click()
+          await page.getByRole('link', { name: 'E2E testing, -aapo' }).click()
           await expect(page.getByRole('button', { name: 'delete' })).not.toBeVisible()
         })
       })
